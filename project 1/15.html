@@ -4,15 +4,14 @@
 <style>
 
 
-
 /*middle for info*/
- .information {
+  #information {
   max-width: 600px;
   margin: 0 auto;
   text-align: center;
-
-  /*middle for table*/
-}table {
+}
+/*middle for table*/
+table {
   margin: 0 auto;}
 
 summary {
@@ -22,13 +21,23 @@ summary {
   /*remove triangle*/
   list-style:none;
 }
+h2 {
+  font-size: 24px;
+  transition: 0.2s;
+}
+h2:hover {
+  font-size: 30px;
+  transition: 0.2s;
+}
 
 summary:hover {
   background-color: #f5e6c8;
+  transition: 1s;
 }
 
 tbody tr:hover {
   background-color: #fdf0d5;
+  transition: 1s;
 }
 /*border*/ /*border center*/
 details {
@@ -51,7 +60,7 @@ body{
 </head>
 <body>
 <!--Header-->
-<div class="information">
+<div id="information">
 <h1 id="pappy-s-smokehouse">Pappy&#39;s Smokehouse</h1>
 <h3 id="all-food-is-cooked-fresh-for-the-day-and-we-do-sell-out-">All food is cooked fresh for the day and <em>we do sell out.</em></h3>
 <p>Call if later in the day for availability</p>
