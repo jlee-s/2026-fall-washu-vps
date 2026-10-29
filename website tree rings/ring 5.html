@@ -2,23 +2,39 @@
 <style>
 img {
     width: 500px;
- 
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
-h1 {
-   text-align: center;
-   margin: 0;
-   font-family:  Helvetica, sans-serif;
+.image-mask {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    width: 100%;
+    margin: 20px;
+}
+/* Style the text elements inside the SVG */
+.svg-title {
+    font-family: Helvetica, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    fill: black;
+    text-transform: uppercase; /* Keeps ICELAND uppercase despite body styles */
+}
+.svg-date {
+    font-family: Helvetica, sans-serif;
+    font-size: 14px;
+    fill: black;
+}
+body {
+    text-transform: lowercase;
 }
 p {
    text-align: center;
-   margin: 10;
+   margin: 10px;
 }
-iframe{
+iframe {
     width: 500px;
-    
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -26,21 +42,32 @@ iframe{
 </style>
 </head>
 <body>
-<h1><a href=index.html>ICELAND</h1></a>
-<p> June 2026</p>
+    
+  <div class="image-mask">
+      <a href="index.html" class="r5" style="--delay: 4.8s; text-decoration: none;">
+        <svg width="342" height="311" viewBox="0 0 350 320">
+         <path id="r5-p" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="white"/>
+         <!-- Changed stroke-width from 3 to 6 to act like a bold outer bark -->
+         <path pathLength="100" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke-width="6" stroke="black" fill="none"/>
+         
+         <!-- Centered Text Group -->
+         <g text-anchor="middle" dominant-baseline="central">
+           <!-- Main Title (shifted slightly up) -->
+           <text x="175" y="145" class="svg-title">ICELAND</text>
+           <!-- Date Subtitle (shifted slightly down) -->
+           <text x="175" y="175" class="svg-date">June 2026</text>
+         </g>
+       </svg>
+      </a>
+    </div>
 
-<img src="photo51.jpeg" alt="Gljufrafoss">
+<img src="photo51.jpeg" alt="Description of the image">
 <p>
 <b>Gljufrafoss</b> - Often seen as the main attraction drawing in day tourists from Reykjavik as well as those exploring the island by camper van.
 </p>
-<img src="photo52.jpeg" alt="">
+<img src="photo52.jpeg" alt="Description of the image">
 <p>
 <b>Gljúfrabúi</b> - A smaller sister fall to the famous Gljufrafoss, just a short walk away contains a equality impressive fall that you can get up close to.
 </p>
 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2130.485928394019!2d-19.989023522473623!3d63.620865460429954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48d71eb01553b317%3A0x966a55b6ec145f2e!2zR2xqw7pmcmFiw7pp!5e1!3m2!1sen!2sus!4v1793131623836!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-
-
-
-
-
 </body>
