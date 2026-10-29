@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Rings</title>
+  <style>
+    /* Page Layout Setup */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Trebuchet MS', Arial, sans-serif;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      background-color: #ffffff;
+    }
+
+    /* STATIC HEADER ABOVE THE RINGS */
+    .ring-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #222222;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .container {
+      position: relative;       
+      display: flex;
+      justify-content: center;   
+      align-items: center;       
+      width: 350px;             
+      height: 350px;            
+    }
+
+    /* CRITICAL CLICK/HOVER OVERLAP FIX */
+    .container a {
+      position: absolute;
+      pointer-events: none; 
+    }
+
+    /* Deactivate mouse intercepts on the white fill vectors */
+    .container svg path[fill="white"],
+    .container svg use {
+      pointer-events: none;
+    }
+
+    /* Activate hover detection ONLY on the black outline paths */
+    .container svg path[stroke="black"] {
+      pointer-events: stroke;
+      cursor: pointer;
+      transition: stroke-width 0.2s ease-in-out;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: drawRing 1.2s ease-in-out forwards;
+      animation-delay: var(--delay);
+    }
+
+    /* Hover interactions for the stroke path lines */
+    .container a:hover path[stroke="black"] {
+      stroke-width: 5px; 
+    }
+
+    @keyframes drawRing {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* HOVER CAPTION ELEMENT */
+    .ring-caption {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #333333;
+      min-height: 1.5em; 
+    }
+
+    /* DEFAULT TEXT STATE */
+    .container:not(:has(a:hover)) ~ .ring-caption::after {
+      content: "click on a tree ring to explore";
+    }
+
+    /* DYNAMIC TEXT MAPPING SYSTEM */
+    .container:has(.r1:hover) ~ .ring-caption::after { content: "PORTUGAL - SUMMER 2023"; }
+    .container:has(.r2:hover) ~ .ring-caption::after { content: "TAIWAN BIKE TRIP - WINTER 2024"; }
+    .container:has(.r3:hover) ~ .ring-caption::after { content: "TAIWAN TEACHING + HAWAII - SUMMER 2025"; }
+    .container:has(.r4:hover) ~ .ring-caption::after { content: "FLORDIA + BAHAMAS - WINTER 2025"; }
+    .container:has(.r5:hover) ~ .ring-caption::after { content: "ICELAND - SUMMER 2026"; }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <h2 class="ring-title">Tree Rings</h2>
+
+    <div class="container">
+      <!-- Ring 5 (Outermost) -->
+      <a href="ring 5.html" class="r5" style="--delay: 4.8s;">
+        <svg width="342" height="311" viewBox="0 0 342 311">
+          <path id="r5-p" d="M341.5 159.588C341.5 247.726 265.053 310.5 170.75 310.5C76.4474 310.5 0 247.726 0 159.588C0 71.4501 76.4474 0 170.75 0C265.053 0 341.5 71.4501 341.5 159.588Z" fill="white"/>
+          <path pathLength="100" d="M341.5 159.588C341.5 247.726 265.053 310.5 170.75 310.5C76.4474 310.5 0 247.726 0 159.588C0 71.4501 76.4474 0 170.75 0C265.053 0 341.5 71.4501 341.5 159.588Z" stroke-width="3" stroke="black" fill="none"/>
+        </svg>
+      </a>
+
+      <!-- Ring 4 -->
+      <a href="ring 4.html" class="r4" style="--delay: 3.6s;">
+        <svg width="306" height="258" viewBox="0 0 306 258">
+          <path id="r4-p" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" fill="white"/>
+          <path pathLength="100" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke-width="3" stroke="black" fill="none"/>
+        </svg>
+      </a>
+
+      <!-- Ring 3 -->
+      <a href="ring 3.html" class="r3" style="--delay: 2.4s;">
+        <svg width="243" height="229" viewBox="0 0 243 229">
+          <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" fill="white"/>
+          <path pathLength="100" d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke-width="3" stroke="black" fill="none"/>
+        </svg>
+      </a>
+
+      <!-- Ring 2 -->
+      <a href="ring 2.html" class="r2" style="--delay: 1.2s;">
+        <svg width="195" height="178" viewBox="0 0 195 178">
+          <path id="r2-p" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" fill="white"/>
+          <path pathLength="100" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke-width="3" stroke="black" fill="none"/>
+        </svg>
+      </a>
+
+      <!-- Ring 1 (Innermost) -->
+      <a href="ring 1.html" class="r1" style="--delay: 0s;">
+        <svg width="146" height="128" viewBox="0 0 146 128">
+          <path id="r1-p" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" fill="white"/>
+          <path pathLength="100" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke-width="3" stroke="black" fill="none"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="ring-caption"></div>
+  </div>
+
+</body>
+</html>
