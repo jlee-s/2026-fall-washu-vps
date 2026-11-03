@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iceland</title>
+<style>
+/* Layout Base styling */
+body {
+    text-transform: lowercase;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    background-color: #ffffff;
+    color: #222222;
+    margin: 0;
+    padding: 40px 20px;
+    overflow-x: hidden; /* the echo rings and offsets can poke past the edge on small screens */
+}
+
+svg {
+    overflow: visible;
+}
+
+/* ---------- Title badge ---------- */
+.image-mask {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 40px 0 70px 0;
+}
+
+.svg-title {
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    fill: black;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.svg-date {
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 14px;
+    fill: #555555;
+    letter-spacing: 1px;
+}
+
+/* ---------- Entries: each photo + caption, nudged off the center line ---------- */
+.entry {
+    /* sideways nudge: left entries use --dir:-1, right entries use --dir:1 */
+    transform: translateX(calc(var(--dir) * min(60px, 6vw)));
+    margin: 0 auto var(--gap, 80px) auto;
+    width: min(500px, 76vw);
+}
+.entry.left  { --dir: -1; --tilt: -1.6deg; }
+.entry.right { --dir:  1; --tilt:  1.2deg; }
+
+/* The photo wrapper: tilted, with one growth-ring outline behind it */
+.shot {
+    position: relative;
+    margin: 0;
+    transform: rotate(var(--tilt));
+}
+.shot::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    border-style: solid;
+    border-color: #000000;
+}
+/* nearest echo ring */
+.shot::before {
+    inset: calc(-1 * min(16px, 2.5vw));
+    border-width: 2px;
+    border-radius: 45% 55% 40% 60% / 55% 45% 60% 40%;
+    transform: rotate(calc(var(--tilt) * -1.6));
+}
+
+/* Organic container for both images and map iframes */
+.media-container {
+    position: relative;
+    z-index: 1; /* sits above the echo rings so they appear to grow out from behind */
+    width: 100%;
+    aspect-ratio: 500 / 380;
+    display: block;
+    overflow: hidden;
+    background-color: #fcfcfc;
+
+    /* Unequal corners to emulate tree ring contours */
+    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+    border: 3px solid #000000;
+    box-sizing: border-box;
+}
+
+.media-container img,
+.media-container iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border: 0;
+}
+
+p {
+    text-align: center;
+    margin: 60px 0 0 0; /* extra top room so the echo rings never touch the caption */
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #444444;
+}
+
+/* Visually hidden copy of the caption for screen readers (letters are split up for the wobble) */
+.sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+.w {
+    white-space: nowrap;
+}
+.l {
+    display: inline-block;
+}
+</style>
+</head>
+<body>
+
+    <!-- Title Badge: flat text with the letter wobble -->
+    <div class="image-mask">
+      <a href="index.html" class="r5" style="text-decoration: none;" aria-label="iceland, june 2026 - back to all rings">
+        <svg width="342" height="100" viewBox="0 0 350 100" aria-hidden="true">
+          <g text-anchor="middle" dominant-baseline="central">
+            <text x="175" y="35" class="svg-title"><tspan dy="0.2 0.2 0.4 0.2 0.2 0.3 0.2" rotate="1.2 1.4 1.8 2.0 1.0 -1.0 -2.0">ICELAND</tspan></text>
+            <text x="175" y="70" class="svg-date"><tspan dy="0.7 -0.1 -0.2 -0.1 0.1 0.2 0.1 -0.3 -0.6" rotate="-3.2 -2.2 0.0 1.1 1.3 1.7 1.9 0.9 -1.0">june 2026</tspan></text>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Media Section 1 -->
+    <section class="entry left" style="--gap: 110px;">
+        <figure class="shot">
+            <div class="media-container">
+                <img src="photo51.jpeg" alt="Gljufrafoss waterfall landscape">
+            </div>
+        </figure>
+        <p data-wobble>
+            <b>Gljufrafoss</b> - often seen as the main attraction drawing in day tourists from reykjavik as well as those exploring the island by camper van.
+        </p>
+    </section>
+
+    <!-- Media Section 2 -->
+    <section class="entry right" style="--gap: 80px;">
+        <figure class="shot">
+            <div class="media-container">
+                <img src="photo52.jpeg" alt="Gljufrabui secondary waterfall">
+            </div>
+        </figure>
+        <p data-wobble>
+            <b>Gljúfrabúi</b> - a smaller sister fall to the famous gljufrafoss, just a short walk away contains an equally impressive fall that you can get up close to.
+        </p>
+    </section>
+
+    <!-- Map Section -->
+    <!-- Copy a <section class="entry left|right"> block above, alternate left and right,
+         and vary --gap so the spacing stays uneven. Put the map iframe inside .media-container. -->
+
+<script>
+/* Letter wobble for captions: each letter sits slightly higher or lower and tilts a little,
+   changing slowly (every ~4 letters), matching the home page. Plain text still works without JS. */
+(function () {
+  var AMP_Y = 1.2, AMP_R = 2, STEP = 4;
+
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  document.querySelectorAll('[data-wobble]').forEach(function (el, idx) {
+    var plain = el.textContent.replace(/\s+/g, ' ').trim();
+    var total = plain.replace(/\s/g, '').length;
+    var rand = rng(idx * 7919 + plain.length);
+    var count = Math.ceil(total / STEP) + 2, ys = [], rs = [], i;
+    for (i = 0; i < count; i++) { ys.push((rand() * 2 - 1) * AMP_Y); }
+    for (i = 0; i < count; i++) { rs.push((rand() * 2 - 1) * AMP_R); }
+
+    var n = 0;
+    function value(arr, k) {
+      var a = Math.floor(k / STEP), t = (1 - Math.cos(Math.PI * (k % STEP) / STEP)) / 2;
+      return arr[a] * (1 - t) + arr[a + 1] * t;
+    }
+    function wrap(node) {
+      if (node.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach(function (tok) {
+          if (!tok) return;
+          if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(' ')); return; }
+          var w = document.createElement('span');
+          w.className = 'w';
+          tok.split('').forEach(function (ch) {
+            var l = document.createElement('span');
+            l.className = 'l';
+            l.textContent = ch;
+            l.style.transform = 'translateY(' + value(ys, n).toFixed(2) + 'px) rotate(' + value(rs, n).toFixed(2) + 'deg)';
+            n++;
+            w.appendChild(l);
+          });
+          frag.appendChild(w);
+        });
+        return frag;
+      }
+      var copy = node.cloneNode(false);
+      node.childNodes.forEach(function (c) { copy.appendChild(wrap(c)); });
+      return copy;
+    }
+
+    var visual = document.createElement('span');
+    visual.setAttribute('aria-hidden', 'true');
+    Array.prototype.slice.call(el.childNodes).forEach(function (c) { visual.appendChild(wrap(c)); });
+    var sr = document.createElement('span');
+    sr.className = 'sr';
+    sr.textContent = plain;
+    el.textContent = '';
+    el.appendChild(sr);
+    el.appendChild(visual);
+  });
+})();
+</script>
+
+</body>
+</html>

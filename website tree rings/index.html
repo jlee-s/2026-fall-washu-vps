@@ -1,153 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tree Rings</title>
-  <style>
-    /* Page Layout Setup */
-    .page-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Trebuchet MS', Arial, sans-serif;
-      text-transform: lowercase;
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      background-color: #ffffff;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Rings</title>
+    <style>
+        /* Black and white: off-white page, white between the ring lines */
+        :root {
+            --page: #ffffff;
+            --ring-fill: #ffffff;
+        }
 
-    /* title*/
-    .ring-title {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: #222222;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-    }
+        html, body {
+            margin: 0;
+            background-color: var(--page);
+        }
 
-    .container {
-      position: relative;       
-      display: flex;
-      justify-content: center;   
-      align-items: center;       
-      width: 350px;             
-      height: 350px;            
-    }
+        /* Page Layout Setup */
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            text-transform: lowercase;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--page);
+        }
 
-    /* CRITICAL CLICK/HOVER OVERLAP FIX */
-    .container a {
-      position: absolute;
-      pointer-events: none; 
-    }
+        /* title*/
+        .ring-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
 
-    /* Deactivate mouse intercepts on the white fill vectors */
-    .container svg path[fill="white"],
-    .container svg use {
-      pointer-events: none;
-    }
+        .container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 380px;
+            height: 380px;
+        }
 
-    /* Activate hover detection ONLY on the black outline paths */
-    .container svg path[stroke="black"] {
-      pointer-events: stroke;
-      cursor: pointer;
-      transition: stroke-width 0.2s ease-in-out;
-      stroke-dasharray: 100;
-      stroke-dashoffset: 100;
-      animation: drawRing 1.2s ease-in-out forwards;
-      animation-delay: var(--delay);
-    }
+        /* Allow inner graphics to burst past bounding boxes safely */
+        svg {
+            overflow: visible;
+        }
 
-    /* Hover interactions for the normal stroke path lines (Rings 1-4) */
-    .container a:not(.r5):hover path[stroke="black"] {
-      stroke-width: 5px; 
-    }
+        /* CRITICAL CLICK/HOVER OVERLAP FIX */
+        .container a {
+            position: absolute;
+            pointer-events: none;
+        }
 
-    /* Extra visual pop for Ring 5 (Bark) on hover */
-    .container a.r5:hover path[stroke="black"] {
-      stroke-width: 9px;
-    }
+        /* Ring fills (the space between lines); the click buffer is transparent */
+        .container svg path[fill="white"] {
+            fill: var(--ring-fill);
+        }
 
-    @keyframes drawRing {
-      to { stroke-dashoffset: 0; }
-    }
+        /* Deactivate mouse intercepts on the white fill vectors */
+        .container svg path[fill="white"],
+        .container svg use {
+            pointer-events: none;
+        }
 
-    /* HOVER CAPTION ELEMENT */
-    .ring-caption {
-      margin-top: 30px;
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #333333;
-      min-height: 1.5em; 
-    }
+        /* Activate hover detection ONLY on the black outline paths */
+        .container svg path[stroke="black"] {
+            pointer-events: stroke;
+            cursor: pointer;
+            transition: stroke-width 0.2s ease-in-out;
+        }
 
-    /* DEFAULT TEXT STATE */
-    .container:not(:has(a:hover)) ~ .ring-caption::after {
-      content: "click on a tree ring to explore";
-    }
+        /* Invisible click buffer: a wide transparent stroke that follows each ring's outline */
+        .container svg path.hit {
+            pointer-events: stroke;
+            cursor: pointer;
+        }
 
-    /* DYNAMIC TEXT MAPPING SYSTEM */
-    .container:has(.r1:hover) ~ .ring-caption::after { content: "PORTUGAL - SUMMER 2023"; }
-    .container:has(.r2:hover) ~ .ring-caption::after { content: "TAIWAN BIKE TRIP - WINTER 2024"; }
-    .container:has(.r3:hover) ~ .ring-caption::after { content: "TAIWAN TEACHING + HAWAII - SUMMER 2025"; }
-    .container:has(.r4:hover) ~ .ring-caption::after { content: "FLORDIA + BAHAMAS - WINTER 2025"; }
-    .container:has(.r5:hover) ~ .ring-caption::after { content: "ICELAND - SUMMER 2026"; }
-  </style>
+        /* Delicate fine-line hover states */
+        .container a:not(.r5):hover path[stroke="black"] {
+            stroke-width: 3px;
+        }
+
+        /* Scaled down hover pop for the Bark layer */
+        .container a.r5:hover path[stroke="black"] {
+            stroke-width: 5px;
+        }
+
+        /* ABOUT LINK - plain text in the top right corner, keeps the letter wobble */
+        .about-link {
+            position: fixed;
+            top: 20px;
+            right: 28px;
+            color: #444444;
+            text-decoration: none;
+        }
+
+        .about-link svg {
+            display: block;
+        }
+
+        .about-link text {
+            fill: currentColor;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .about-link:hover,
+        .about-link:focus-visible {
+            color: #222222;
+        }
+
+        .about-link:hover text,
+        .about-link:focus-visible text {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* CURVED TEXT - follows the outer ring: "about" over the top, captions under the bottom */
+        .container .ring-text {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            color: #444444;
+            pointer-events: none;
+        }
+
+        .ring-text text {
+            fill: currentColor;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        /* CAPTION SWITCHING - only one caption line shows at a time */
+        .ring-text .cap {
+            display: none;
+        }
+
+        .container:not(:has(a:hover)) .cap-default {
+            display: inline;
+        }
+
+        .container:has(.r1:hover) .cap-r1 { display: inline; }
+        .container:has(.r2:hover) .cap-r2 { display: inline; }
+        .container:has(.r3:hover) .cap-r3 { display: inline; }
+        .container:has(.r4:hover) .cap-r4 { display: inline; }
+        .container:has(.r5:hover) .cap-r5 { display: inline; }
+        .container:has(.r0:hover) .cap-r0 { display: inline; }
+        .container:has(.r00:hover) .cap-r00 { display: inline; }
+        .container:has(.r000:hover) .cap-r000 { display: inline; }
+    </style>
 </head>
 <body>
+    <div class="page-wrapper">
+        <a class="about-link" href="about.html" aria-label="about this project">
+            <svg width="170" height="30" viewBox="0 0 170 30" aria-hidden="true">
+                <text x="168" y="20" text-anchor="end"><tspan dy="-1.0 0.4 0.9 0.9 0.4 -0.1 -0.3 -0.3 -0.1 -0.2 -0.5 -0.5 -0.2 0.1 0.2 0.2 0.1 -0.0" rotate="3.0 2.9 2.5 2.2 2.1 2.3 2.7 3.1 3.3 3.2 3.1 2.9 2.8 2.3 0.9 -0.6 -1.1 -1.2">about this project</tspan></text>
+            </svg>
+        </a>
+        <div class="container">
+            <!-- Ring 5 (Outermost / Thick Bark Layer) -->
+            <a href="r5.html" class="r5">
+                <svg width="342" height="311" viewBox="0 0 342 311">
+                    <path id="r5-p" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="white"/>
+                    <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke-width="3.5" stroke="black" fill="none"/>
+                    <path class="hit" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke="transparent" stroke-width="20" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-  <div class="page-wrapper">
+            <!-- Ring 4 -->
+            <a href="r4.html" class="r4">
+                <svg width="306" height="258" viewBox="0 0 306 258">
+                    <path id="r4-p" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" fill="white"/>
+                    <path d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-    <h2 class="ring-title"></h2>
+            <!-- Ring 3 -->
+            <a href="r3.html" class="r3">
+                <svg width="243" height="229" viewBox="0 0 243 229">
+                    <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" fill="white"/>
+                    <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-    <div class="container">
-      <!-- Ring 5 (Outermost / Thick Bark Layer) -->
-      <a href="ring 5.html" class="r5" style="--delay: 4.8s;">
-        <svg width="342" height="311" viewBox="0 0 342 311">
-         <path id="r5-p" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="white"/>
-         <!-- Changed stroke-width from 3 to 6 to act like a bold outer bark -->
-         <path pathLength="100" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke-width="6" stroke="black" fill="none"/>
-       </svg>
-      </a>
+            <!-- Ring 2 -->
+            <a href="r2.html" class="r2">
+                <svg width="195" height="178" viewBox="0 0 195 178">
+                    <path id="r2-p" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" fill="white"/>
+                    <path d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-      <!-- Ring 4 -->
-      <a href="ring 4.html" class="r4" style="--delay: 3.6s;">
-        <svg width="306" height="258" viewBox="0 0 306 258">
-          <path id="r4-p" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" fill="white"/>
-          <path pathLength="100" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke-width="3" stroke="black" fill="none"/>
-        </svg>
-      </a>
+            <!-- Ring 1 -->
+            <a href="r1.html" class="r1">
+                <svg width="146" height="128" viewBox="0 0 146 128">
+                    <path id="r1-p" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" fill="white"/>
+                    <path d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-      <!-- Ring 3 -->
-      <a href="ring 3.html" class="r3" style="--delay: 2.4s;">
-        <svg width="243" height="229" viewBox="0 0 243 229">
-          <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" fill="white"/>
-          <path pathLength="100" d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke-width="3" stroke="black" fill="none"/>
-        </svg>
-      </a>
+            <!-- Ring 0 (new, Figma node 33-9) -->
+            <a href="r0.html" class="r0" aria-label="TRIP NAME - SEASON YEAR">
+                <svg width="105" height="86" viewBox="0 0 105 86">
+                    <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" fill="white"/>
+                    <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-      <!-- Ring 2 -->
-      <a href="ring 2.html" class="r2" style="--delay: 1.2s;">
-        <svg width="195" height="178" viewBox="0 0 195 178">
-          <path id="r2-p" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" fill="white"/>
-          <path pathLength="100" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke-width="3" stroke="black" fill="none"/>
-        </svg>
-      </a>
+            <!-- Ring 00 (new, Figma node 57-3) -->
+            <a href="r00.html" class="r00" aria-label="TRIP NAME - SEASON YEAR">
+                <svg width="62" height="58" viewBox="0 0 62 58">
+                    <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" fill="white"/>
+                    <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
 
-      <!-- Ring 1 (Innermost) -->
-      <a href="ring 1.html" class="r1" style="--delay: 0s;">
-        <svg width="146" height="128" viewBox="0 0 146 128">
-          <path id="r1-p" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" fill="white"/>
-          <path pathLength="100" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke-width="3" stroke="black" fill="none"/>
-        </svg>
-      </a>
-      
+            <!-- Ring 000 (new innermost, Figma node 57-5) -->
+            <a href="r000.html" class="r000" aria-label="TRIP NAME - SEASON YEAR">
+                <svg width="36" height="29" viewBox="0 0 36 29">
+                    <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" fill="white"/>
+                    <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+            <!-- Curved text that follows the outer ring's outline -->
+            <svg class="ring-text" viewBox="0 0 380 380" aria-live="polite">
+                <defs>
+                    <path id="caption-curve" d="M -1.2 189.5 C -43.4 267.0, 47.0 373.0, 151.2 373.0 C 255.3 373.0, 391.2 309.7, 391.2 197.3" fill="none"/>
+                </defs>
+                <text class="cap cap-default">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.1 -0.1 -0.2 -0.2 -0.1 0.2 0.6 0.6 0.2 -0.0 -0.0 -0.0 -0.0 -0.1 -0.3 -0.3 -0.1 0.1 0.3 0.3 0.1 -0.1 -0.3 -0.3 -0.1 0.1 0.1 0.1 0.1 0.1 0.1" rotate="-1.3 -0.8 0.5 1.8 2.3 1.8 0.5 -0.7 -1.3 -1.0 -0.5 0.1 0.3 0.7 1.7 2.7 3.1 2.8 2.2 1.6 1.3 1.1 0.6 0.1 -0.2 -0.4 -1.0 -1.6 -1.8 -1.5 -0.8">click on a tree ring to explore</tspan></textPath>
+                </text>
+                <text class="cap cap-r1">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.3 -0.1 -0.3 -0.3 -0.1 0.2 0.4 0.4 0.2 0.0 0.1 0.1 0.0 -0.2 -0.4 -0.4 -0.2 0.3 0.8 0.8 0.3 -0.2" rotate="-2.4 -2.2 -1.7 -1.2 -1.0 -1.3 -1.9 -2.4 -2.7 -2.8 -3.0 -3.2 -3.3 -2.5 -0.7 1.1 1.9 1.7 1.3 0.9 0.7 0.8">PORTUGAL - SUMMER 2023</tspan></textPath>
+                </text>
+                <text class="cap cap-r2">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-1.2 0.0 0.0 0.0 0.0 -0.1 -0.2 -0.2 -0.1 0.3 0.8 0.8 0.3 0.0 0.0 0.0 0.0 0.1 0.2 0.2 0.1 -0.1 -0.3 -0.3 -0.1 0.2 0.4 0.4 0.2 -0.3" rotate="-2.9 -2.7 -2.3 -1.9 -1.7 -1.1 0.5 2.0 2.6 1.9 0.2 -1.6 -2.3 -2.3 -2.4 -2.4 -2.4 -1.9 -0.6 0.8 1.3 1.4 1.7 1.9 2.0 1.4 -0.0 -1.5 -2.1 -1.9">TAIWAN BIKE TRIP - WINTER 2024</tspan></textPath>
+                </text>
+                <text class="cap cap-r3">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.2 0.0 0.0 0.0 0.0 0.2 0.4 0.4 0.2 0.0 0.1 0.1 0.0 -0.4 -0.9 -0.9 -0.4 0.1 0.2 0.2 0.1 -0.1 -0.2 -0.2 -0.1 0.2 0.4 0.4 0.2 -0.1 -0.2 -0.2 -0.1 0.0 0.1 0.1 0.0 0.0" rotate="2.5 2.1 1.3 0.5 0.1 -0.1 -0.6 -1.1 -1.3 -1.5 -2.0 -2.5 -2.7 -2.0 -0.3 1.5 2.2 2.0 1.7 1.4 1.3 0.8 -0.4 -1.5 -2.0 -1.7 -0.7 0.2 0.6 0.7 1.0 1.3 1.4 0.7 -0.9 -2.5 -3.2 -2.4">TAIWAN TEACHING + HAWAII - SUMMER 2025</tspan></textPath>
+                </text>
+                <text class="cap cap-r4">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="1.1 0.1 0.1 0.1 0.1 -0.2 -0.5 -0.5 -0.2 0.0 0.0 0.0 0.0 0.2 0.5 0.5 0.2 -0.2 -0.5 -0.5 -0.2 0.1 0.4 0.4 0.1 -0.1 -0.2 -0.2 -0.1 -0.0 -0.1" rotate="1.0 0.6 -0.5 -1.6 -2.0 -1.5 -0.2 1.0 1.6 1.1 -0.2 -1.4 -1.9 -1.6 -0.8 0.0 0.3 0.1 -0.6 -1.2 -1.5 -1.1 -0.3 0.6 0.9 0.5 -0.6 -1.7 -2.2 -2.1 -2.0">FLORDIA + BAHAMAS - WINTER 2025</tspan></textPath>
+                </text>
+                <text class="cap cap-r5">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 -0.1 -0.2 -0.2 -0.1 0.3 0.8 0.8 0.3 -0.3 -0.8 -0.8 -0.3 0.4 0.9 0.9 0.4 -0.4 -1.0 -1.0 -0.4" rotate="3.3 2.8 1.6 0.4 -0.1 -0.5 -1.6 -2.6 -3.0 -2.9 -2.5 -2.1 -1.9 -2.0 -2.2 -2.5 -2.6 -2.2 -1.1 0.0 0.5">ICELAND - SUMMER 2026</tspan></textPath>
+                </text>
+                <text class="cap cap-r0">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">TRIP NAME - SEASON YEAR</tspan></textPath>
+                </text>
+                <text class="cap cap-r00">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">TRIP NAME - SEASON YEAR</tspan></textPath>
+                </text>
+                <text class="cap cap-r000">
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">TRIP NAME - SEASON YEAR</tspan></textPath>
+                </text>
+            </svg>
+        </div>
     </div>
-
-    <div class="ring-caption"></div>
-  </div>
-
 </body>
 </html>
