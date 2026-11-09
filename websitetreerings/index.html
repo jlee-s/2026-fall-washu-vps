@@ -95,6 +95,22 @@
             stroke-width: 5px;
         }
 
+        /* HAND-DRAWN - each ring wobbles differently; bands use the same warp as their outline */
+        .container a.r5 svg path[fill="white"],  .container a.r3 svg path[fill="white"],
+        .container a.r1 svg path[fill="white"],  .container a.r00 svg path[fill="white"] { filter: url(#warp-a); }
+        .container a.r4 svg path[fill="white"],  .container a.r2 svg path[fill="white"],
+        .container a.r0 svg path[fill="white"],  .container a.r000 svg path[fill="white"] { filter: url(#warp-b); }
+        .container a.r5 svg path[stroke="black"], .container a.r3 svg path[stroke="black"],
+        .container a.r1 svg path[stroke="black"], .container a.r00 svg path[stroke="black"] { filter: url(#hand-a); }
+        .container a.r4 svg path[stroke="black"], .container a.r2 svg path[stroke="black"],
+        .container a.r0 svg path[stroke="black"], .container a.r000 svg path[stroke="black"] { filter: url(#hand-b); }
+
+        /* BARK - decorative, never intercepts the mouse; band thickens slightly on hover */
+        .container .bark, .container .bark path { pointer-events: none; }
+        .container .bark path { transition: stroke-width 0.25s ease-in-out; }
+        .container a.r5:hover .bark-band,
+        .container a.r5:focus-visible .bark-band { stroke-width: 8; }
+
         /* TONE - alternating light grey bands so the rings read as mass, not just outline */
         .container svg path { transition: fill 0.25s ease-in-out; }
         /* Alternate light/dark, and drift lighter toward the centre so the tone has depth */
@@ -197,6 +213,33 @@
     </style>
 </head>
 <body>
+    <!-- HAND-DRAWN: wobble the lines (and the grey bands, with identical warp so edges still line up) and let the pen pressure vary -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="warp-a" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="warp-b" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="8" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="hand-a" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G" result="wavy"/>
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="g"/>
+                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 0.2" result="pressure"/>
+                <feComposite in="wavy" in2="pressure" operator="in"/>
+            </filter>
+            <filter id="hand-b" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="8" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G" result="wavy"/>
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="13" result="g"/>
+                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 0.2" result="pressure"/>
+                <feComposite in="wavy" in2="pressure" operator="in"/>
+            </filter>
+        </defs>
+    </svg>
     <div class="page-wrapper">
         <h1 class="site-title">tree rings</h1>
         <a class="about-link" href="about.html" aria-label="about this project">
@@ -209,6 +252,21 @@
             <a href="r5.html" class="r5">
                 <svg width="342" height="311" viewBox="0 0 342 311">
                     <path id="r5-p" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="white"/>
+                    <defs>
+                        <!-- gentle unevenness for the bark -->
+                        <filter id="bark-rough" filterUnits="userSpaceOnUse" x="-50" y="-50" width="442" height="411">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="21" result="lumps"/>
+                            <feDisplacementMap in="SourceGraphic" in2="lumps" scale="5" xChannelSelector="R" yChannelSelector="G" result="bumpy"/>
+                            <feTurbulence type="fractalNoise" baseFrequency="0.2" numOctaves="2" seed="4" result="fine"/>
+                            <feDisplacementMap in="bumpy" in2="fine" scale="1.4" xChannelSelector="G" yChannelSelector="R"/>
+                        </filter>
+                    </defs>
+                    <!-- BARK (light touch): a slim dark band, a little thicker in places, with a few pale flecks -->
+                    <g class="bark" filter="url(#bark-rough)">
+                        <path class="bark-band" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="none" stroke="#1c1c1c" stroke-width="6"/>
+                        <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" transform="translate(170 155) scale(1.01) translate(-170 -155)" fill="none" stroke="#1c1c1c" stroke-width="3" stroke-dasharray="70 40 110 50 60 45"/>
+                        <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="none" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="10 30 22 40 8 55"/>
+                    </g>
                     <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke-width="3.5" stroke="black" fill="none"/>
                     <path class="hit" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke="transparent" stroke-width="20" stroke-linejoin="round" fill="none"/>
                 </svg>
