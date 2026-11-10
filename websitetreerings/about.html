@@ -1,7 +1,380 @@
-<h1>
-About
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <style>
+        /* Black and white: off-white page, white between the ring lines */
+        :root {
+            --page: #ffffff;
+            --ring-fill: #ffffff;
+        }
 
-<p>
-This piece represents the idea of growth through experience. 
-</p>
+        html, body {
+            margin: 0;
+            background-color: var(--page);
+        }
+
+        /* Page Layout Setup */
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-transform: lowercase;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--page);
+        }
+
+        /* title*/
+        .ring-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 380px;
+            height: 380px;
+            scale: 1.5
+            ;
+        }
+
+        /* Allow inner graphics to burst past bounding boxes safely */
+        svg {
+            overflow: visible;
+        }
+
+        /* CRITICAL CLICK/HOVER OVERLAP FIX */
+        .container a {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* Ring fills (the space between lines); the click buffer is transparent */
+        .container svg path[fill="white"] {
+            fill: var(--ring-fill);
+        }
+
+        /* Deactivate mouse intercepts on the white fill vectors */
+        .container svg path[fill="white"],
+        .container svg use {
+            pointer-events: none;
+        }
+
+        /* Activate hover detection ONLY on the black outline paths */
+        .container svg path[stroke="black"] {
+            pointer-events: stroke;
+            cursor: pointer;
+            transition: stroke-width 0.2s ease-in-out;
+        }
+
+        /* Invisible click buffer: a wide transparent stroke that follows each ring's outline */
+        .container svg path.hit {
+            pointer-events: stroke;
+            cursor: pointer;
+        }
+
+        /* LOCKED rings: no link, and the cursor says so */
+        .container a.locked svg path[stroke="black"],
+        .container a.locked svg path.hit { cursor: not-allowed; }
+
+        /* Delicate fine-line hover states */
+        .container a:not(.r5):hover path[stroke="black"] {
+            stroke-width: 3px;
+        }
+
+        /* Scaled down hover pop for the Bark layer */
+        .container a.r5:hover path[stroke="black"] {
+            stroke-width: 5px;
+        }
+
+        /* ABOUT PAGE: the rings stay as a faint, untouchable backdrop */
+        .page-wrapper { position: relative; }
+        .container { opacity: 0.05; pointer-events: none; }
+
+        .site-title { z-index: 3; }
+        .site-title a { color: inherit; text-decoration: none; }
+        .site-title a:hover,
+        .site-title a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+
+        /* Centred text on top of the rings */
+        .about {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+        .about h1 {
+            margin: 0 0 20px 0;
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #111111;
+        }
+        .about p {
+            margin: 0;
+            max-width: 32rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #333333;
+        }
+
+        /* HAND-DRAWN - each ring wobbles differently; bands use the same warp as their outline */
+        .container a.r5 svg path[fill="white"],  .container a.r3 svg path[fill="white"],
+        .container a.r1 svg path[fill="white"],  .container a.r00 svg path[fill="white"] { filter: url(#warp-a); }
+        .container a.r4 svg path[fill="white"],  .container a.r2 svg path[fill="white"],
+        .container a.r0 svg path[fill="white"],  .container a.r000 svg path[fill="white"] { filter: url(#warp-b); }
+        .container a.r5 svg path[stroke="black"], .container a.r3 svg path[stroke="black"],
+        .container a.r1 svg path[stroke="black"], .container a.r00 svg path[stroke="black"] { filter: url(#hand-a); }
+        .container a.r4 svg path[stroke="black"], .container a.r2 svg path[stroke="black"],
+        .container a.r0 svg path[stroke="black"], .container a.r000 svg path[stroke="black"] { filter: url(#hand-b); }
+
+        /* BARK - decorative, never intercepts the mouse; band thickens slightly on hover */
+        .container .bark, .container .bark path { pointer-events: none; }
+        .container .bark path { transition: stroke-width 0.25s ease-in-out; }
+        .container a.r5:hover .bark-band,
+        .container a.r5:focus-visible .bark-band { stroke-width: 8; }
+
+        /* TONE - alternating light grey bands so the rings read as mass, not just outline */
+        .container svg path { transition: fill 0.25s ease-in-out; }
+        /* Alternate light/dark, and drift lighter toward the centre so the tone has depth */
+        .container a.r5 svg path[fill="white"]   { fill: #e2e2e2; }
+        .container a.r4 svg path[fill="white"]   { fill: #f3f3f3; }
+        .container a.r3 svg path[fill="white"]   { fill: #e8e8e8; }
+        .container a.r2 svg path[fill="white"]   { fill: #f6f6f6; }
+        .container a.r1 svg path[fill="white"]   { fill: #ececec; }
+        .container a.r0 svg path[fill="white"]   { fill: #f9f9f9; }
+        .container a.r00 svg path[fill="white"]  { fill: #f1f1f1; }
+        .container a.r000 svg path[fill="white"] { fill: #fcfcfc; }
+
+        /* Hovered ring's band darkens: strong tonal contrast says "this one" */
+        .container a:hover svg path[fill="white"] { fill: #c4c4c4; }
+
+        /* Keyboard focus matches hover */
+        .container a:focus-visible svg path[stroke="black"] { stroke-width: 5px; }
+        .container a:focus-visible { outline: none; }
+        .container a:focus-visible svg path[fill="white"] { fill: #c4c4c4; }
+
+        /* SITE TITLE - top left, the clear first read on the page */
+        .site-title {
+            position: fixed;
+            top: 16px;
+            left: 28px;
+            margin: 0;
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            color: #111111;
+        }
+
+        /* ABOUT LINK - plain text in the top right corner, keeps the letter wobble */
+        .about-link {
+            position: fixed;
+            top: 20px;
+            right: 28px;
+            color: #444444;
+            text-decoration: none;
+        }
+
+        .about-link svg {
+            display: block;
+        }
+
+        .about-link text {
+            fill: currentColor;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .about-link:hover,
+        .about-link:focus-visible {
+            color: #222222;
+        }
+
+        .about-link:hover text,
+        .about-link:focus-visible text {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* CURVED TEXT - follows the outer ring: "about" over the top, captions under the bottom */
+        .container .ring-text {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            color: #444444;
+            pointer-events: none;
+        }
+
+        .ring-text text {
+            fill: currentColor;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        /* CAPTION SWITCHING - only one caption line shows at a time */
+        .ring-text .cap {
+            display: none;
+        }
+
+        .container:not(:has(a:hover)) .cap-default {
+            display: inline;
+        }
+
+        .container:has(.r1:hover) .cap-r1 { display: inline; }
+        .container:has(.r2:hover) .cap-r2 { display: inline; }
+        .container:has(.r3:hover) .cap-r3 { display: inline; }
+        .container:has(.r4:hover) .cap-r4 { display: inline; }
+        .container:has(.r5:hover) .cap-r5 { display: inline; }
+        .container:has(.r0:hover) .cap-r0 { display: inline; }
+        .container:has(.r00:hover) .cap-r00 { display: inline; }
+        .container:has(.r000:hover) .cap-r000 { display: inline; }
+    </style>
+</head>
+<body>
+    <!-- HAND-DRAWN: wobble the lines (and the grey bands, with identical warp so edges still line up) and let the pen pressure vary -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="warp-a" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="warp-b" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="8" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="hand-a" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G" result="wavy"/>
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="5" result="g"/>
+                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 0.2" result="pressure"/>
+                <feComposite in="wavy" in2="pressure" operator="in"/>
+            </filter>
+            <filter id="hand-b" filterUnits="userSpaceOnUse" x="-30" y="-30" width="420" height="400" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="8" result="w"/>
+                <feDisplacementMap in="SourceGraphic" in2="w" scale="7" xChannelSelector="R" yChannelSelector="G" result="wavy"/>
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="13" result="g"/>
+                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 0.2" result="pressure"/>
+                <feComposite in="wavy" in2="pressure" operator="in"/>
+            </filter>
+        </defs>
+    </svg>
+    <div class="page-wrapper">
+        <h1 class="site-title"><a href="index.html">tree rings</a></h1>
+        <div class="container">
+            <!-- Ring 5 (Outermost / Thick Bark Layer) -->
+            <a class="r5" aria-hidden="true">
+                <svg width="342" height="311" viewBox="0 0 342 311">
+                    <path id="r5-p" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="white"/>
+                    <defs>
+                        <!-- gentle unevenness for the bark -->
+                        <filter id="bark-rough" filterUnits="userSpaceOnUse" x="-50" y="-50" width="442" height="411">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="21" result="lumps"/>
+                            <feDisplacementMap in="SourceGraphic" in2="lumps" scale="5" xChannelSelector="R" yChannelSelector="G" result="bumpy"/>
+                            <feTurbulence type="fractalNoise" baseFrequency="0.2" numOctaves="2" seed="4" result="fine"/>
+                            <feDisplacementMap in="bumpy" in2="fine" scale="1.4" xChannelSelector="G" yChannelSelector="R"/>
+                        </filter>
+                    </defs>
+                    <!-- BARK (light touch): a slim dark band, a little thicker in places, with a few pale flecks -->
+                    <g class="bark" filter="url(#bark-rough)">
+                        <path class="bark-band" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="none" stroke="#1c1c1c" stroke-width="6"/>
+                        <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" transform="translate(170 155) scale(1.01) translate(-170 -155)" fill="none" stroke="#1c1c1c" stroke-width="3" stroke-dasharray="70 40 110 50 60 45"/>
+                        <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" fill="none" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="10 30 22 40 8 55"/>
+                    </g>
+                    <path d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke-width="3.5" stroke="black" fill="none"/>
+                    <path class="hit" d="M341.482 161.714C341.482 256.913 226.343 310.581 138.078 310.581C49.814 310.581 -26.768 220.779 8.995 155.084C54.817 -20.301 76.077 0.793 164.342 0.793C252.607 0.793 341.482 66.515 341.482 161.714Z" stroke="transparent" stroke-width="20" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 4 -->
+            <a class="r4" aria-hidden="true">
+                <svg width="306" height="258" viewBox="0 0 306 258">
+                    <path id="r4-p" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" fill="white"/>
+                    <path d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M305.549 134.158C305.549 213.135 202.526 257.658 123.549 257.658C44.5722 257.658 -23.9514 183.158 8.04878 128.658C49.0486 -16.842 68.0721 0.657994 147.049 0.657994C226.026 0.657994 305.549 55.1812 305.549 134.158Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 3 -->
+            <a class="r3" aria-hidden="true">
+                <svg width="243" height="229" viewBox="0 0 243 229">
+                    <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" fill="white"/>
+                    <path d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M243 124C243 187.513 203 207.5 128 228C48.5 235.5 0 187.513 0 124C0 60.4872 52 12 123 0C194.245 0 243 60.4872 243 124Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 2 -->
+            <a class="r2" aria-hidden="true">
+                <svg width="195" height="178" viewBox="0 0 195 178">
+                    <path id="r2-p" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" fill="white"/>
+                    <path d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M194.323 91.7448C194.323 149.004 180.526 177.573 103.293 177.573C26.06 177.573 53.1775 163.26 14.2421 113.496C-31.9325 54.4794 43.3229 21.0729 109.323 1.5729C176.823 -8.92712 194.323 34.4859 194.323 91.7448Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 1 -->
+            <a class="r1" aria-hidden="true">
+                <svg width="146" height="128" viewBox="0 0 146 128">
+                    <path id="r1-p" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" fill="white"/>
+                    <path d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 0 (new, Figma node 33-9) -->
+            <a class="r0" aria-hidden="true">
+                <svg width="105" height="86" viewBox="0 0 105 86">
+                    <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" fill="white"/>
+                    <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 00 (new, Figma node 57-3) -->
+            <a class="r00" aria-hidden="true">
+                <svg width="62" height="58" viewBox="0 0 62 58">
+                    <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" fill="white"/>
+                    <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+
+            <!-- Ring 000 (new innermost, Figma node 57-5) -->
+            <a class="r000" aria-hidden="true">
+                <svg width="36" height="29" viewBox="0 0 36 29">
+                    <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" fill="white"/>
+                    <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" stroke-width="2" stroke="black" fill="none"/>
+                    <path class="hit" d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" stroke="transparent" stroke-width="16" stroke-linejoin="round" fill="none"/>
+                </svg>
+            </a>
+        </div>
+        <main class="about">
+<p>The idea of tree rings comes from my childhood.<br> I grew up outdoors. From weekend camping trips to RVing through national parks, I spent as much time as possible outdoors.</p><br> <p>Tree rings represent not only the age of a tree, but also its history, environment, and hardships.</p><br><p>Like a tree, each ring contains experiences that represent a year of my life.</p>
+        </main>
+    </div>
+</body>
+</html>
