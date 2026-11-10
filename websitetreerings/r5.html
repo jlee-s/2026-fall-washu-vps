@@ -3,31 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Iceland</title>
+<title>2026</title>
 <style>
-/* Layout Base styling */
-body {
-    text-transform: lowercase;
-    font-family: 'Trebuchet MS', Arial, sans-serif;
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;           /* the page never scrolls; you drag the gallery instead */
     background-color: #ffffff;
     color: #222222;
-    margin: 0;
-    padding: 40px 20px;
-    overflow-x: hidden; /* the echo rings and offsets can poke past the edge on small screens */
+    text-transform: lowercase;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
 }
 
 svg {
     overflow: visible;
 }
 
-/* ---------- Title badge ---------- */
-.image-mask {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 40px 0 70px 0;
+/* ---------- The window you look through ---------- */
+.view {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;          /* we handle touch dragging ourselves */
+    user-select: none;
+    -webkit-user-select: none;
 }
+.view.dragging { cursor: grabbing; }
+
+/* ---------- The big surface that moves. 1 unit = 1% of the shorter screen side (min 6px) ---------- */
+.world {
+    --u: max(1vmin, 6px);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(316 * var(--u));
+    height: calc(216 * var(--u));
+    will-change: transform;
+}
+
+/* ---------- Title in the middle of the surface ---------- */
+.image-mask {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+.image-mask a { display: block; }
 
 .svg-title {
     font-family: 'Trebuchet MS', Arial, sans-serif;
@@ -37,30 +60,33 @@ svg {
     text-transform: uppercase;
     letter-spacing: 2px;
 }
-.svg-date {
+
+/* Hint under the title: invisible at first, fades in after 10 seconds */
+.svg-hint {
     font-family: 'Trebuchet MS', Arial, sans-serif;
     font-size: 14px;
     fill: #555555;
     letter-spacing: 1px;
+    opacity: 0;
+    pointer-events: none;
+    animation: hint-in 1.4s ease 10s forwards;
 }
+@keyframes hint-in { to { opacity: 1; } }
 
-/* ---------- Entries: each photo + caption, nudged off the center line ---------- */
-.entry {
-    /* sideways nudge: left entries use --dir:-1, right entries use --dir:1 */
-    transform: translateX(calc(var(--dir) * min(60px, 6vw)));
-    margin: 0 auto var(--gap, 80px) auto;
-    width: min(500px, 76vw);
-}
-.entry.left  { --dir: -1; --tilt: -1.6deg; }
-.entry.right { --dir:  1; --tilt:  1.2deg; }
-
-/* The photo wrapper: tilted, with one growth-ring outline behind it */
-.shot {
-    position: relative;
+/* ---------- Photos ("bulbs") ---------- */
+.bulb {
+    position: absolute;
+    left: calc(var(--x) * var(--u));
+    top: calc(var(--y) * var(--u));
+    width: calc(var(--w) * var(--u));
+    height: calc(var(--h) * var(--u));
     margin: 0;
     transform: rotate(var(--tilt));
 }
-.shot::before {
+
+/* two growth-ring outlines behind each photo, each a different wobbly shape */
+.bulb::before,
+.bulb::after {
     content: "";
     position: absolute;
     pointer-events: none;
@@ -68,12 +94,17 @@ svg {
     border-style: solid;
     border-color: #000000;
 }
-/* nearest echo ring */
-.shot::before {
-    inset: calc(-1 * min(16px, 2.5vw));
+.bulb::before {
+    inset: calc(var(--u) * -1.3);
     border-width: 2px;
     border-radius: 45% 55% 40% 60% / 55% 45% 60% 40%;
     transform: rotate(calc(var(--tilt) * -1.6));
+}
+.bulb::after {
+    inset: calc(var(--u) * -2.6);
+    border-width: 1.2px;
+    border-radius: 58% 42% 52% 48% / 42% 58% 46% 54%;
+    transform: rotate(calc(var(--tilt) * 1.9));
 }
 
 /* Organic container for both images and map iframes */
@@ -81,16 +112,21 @@ svg {
     position: relative;
     z-index: 1; /* sits above the echo rings so they appear to grow out from behind */
     width: 100%;
-    aspect-ratio: 500 / 380;
+    height: 100%;
     display: block;
     overflow: hidden;
     background-color: #fcfcfc;
-
-    /* Unequal corners to emulate tree ring contours */
-    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
     border: 3px solid #000000;
     box-sizing: border-box;
 }
+
+/* Unequal corners to emulate tree ring contours: six shapes so neighbours differ */
+.b1 .media-container { border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+.b2 .media-container { border-radius: 42% 58% 46% 54% / 56% 44% 58% 42%; }
+.b3 .media-container { border-radius: 52% 48% 38% 62% / 48% 52% 62% 38%; }
+.b4 .media-container { border-radius: 38% 62% 58% 42% / 60% 40% 45% 55%; }
+.b5 .media-container { border-radius: 55% 45% 62% 38% / 40% 60% 50% 50%; }
+.b6 .media-container { border-radius: 46% 54% 44% 56% / 62% 38% 54% 46%; }
 
 .media-container img,
 .media-container iframe {
@@ -99,138 +135,160 @@ svg {
     object-fit: cover;
     display: block;
     border: 0;
-}
-
-p {
-    text-align: center;
-    margin: 60px 0 0 0; /* extra top room so the echo rings never touch the caption */
-    font-size: 1.05rem;
-    line-height: 1.5;
-    color: #444444;
-}
-
-/* Visually hidden copy of the caption for screen readers (letters are split up for the wobble) */
-.sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-.w {
-    white-space: nowrap;
-}
-.l {
-    display: inline-block;
+    pointer-events: none;        /* so dragging over a photo still drags the gallery */
 }
 </style>
 </head>
 <body>
 
-    <!-- Title Badge: flat text with the letter wobble -->
-    <div class="image-mask">
-      <a href="index.html" class="r5" style="text-decoration: none;" aria-label="iceland, june 2026 - back to all rings">
-        <svg width="342" height="100" viewBox="0 0 350 100" aria-hidden="true">
-          <g text-anchor="middle" dominant-baseline="central">
-            <text x="175" y="35" class="svg-title"><tspan dy="0.2 0.2 0.4 0.2 0.2 0.3 0.2" rotate="1.2 1.4 1.8 2.0 1.0 -1.0 -2.0">ICELAND</tspan></text>
-            <text x="175" y="70" class="svg-date"><tspan dy="0.7 -0.1 -0.2 -0.1 0.1 0.2 0.1 -0.3 -0.6" rotate="-3.2 -2.2 0.0 1.1 1.3 1.7 1.9 0.9 -1.0">june 2026</tspan></text>
-          </g>
-        </svg>
-      </a>
+<div class="view" id="view" tabindex="0" aria-label="photo gallery: drag to look around">
+    <div class="world" id="world">
+
+        <!-- Title Badge: sits in the middle of the surface -->
+        <div class="image-mask">
+          <a href="index.html" class="r5" style="text-decoration: none;" aria-label="2026 - back to all rings">
+            <svg width="110" height="50" viewBox="0 0 110 50" aria-hidden="true">
+              <g text-anchor="middle" dominant-baseline="central">
+                <text x="55" y="25" class="svg-title"><tspan dy="0.2 0.4 0.2 0.3" rotate="1.2 1.8 1.0 -1.5">2026</tspan></text>
+                <text x="55" y="58" class="svg-hint"><tspan dy="-0.4 0.1 -0.2 0.2 0.2 -0.7 -0.8 0.5 -0.4 -0.4 0.8 -0.0 0.5 -0.0 0.2 -0.6 0.2 0.6 0.0 0.4 0.3 -0.7 0.4 0.1 -0.3" rotate="-2.8 2.2 -0.2 1.3 2.3 1.3 2.5 -0.6 1.8 -0.3 2.6 2.3 -2.4 -2.2 -1.7 2.8 -0.4 0.8 -1.2 0.0 -0.7 -0.9 0.5 0.5 2.4">click and drag to explore</tspan></text>
+              </g>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Photos. To add one, copy a <figure class="bulb ..."> block and change
+             --x and --y (position), --w and --h (size), --tilt (angle) and the image name.
+             An iframe (a map) can go inside .media-container instead of the img. -->
+        <figure class="bulb b1" style="--x:52.1; --y:56.0; --w:32.7; --h:32.6; --tilt:1.4deg;">
+            <div class="media-container"><img src="photo5/photo51.jpeg" alt="Gljufrafoss waterfall landscape" draggable="false"></div>
+        </figure>
+        <figure class="bulb b2" style="--x:197.1; --y:44.9; --w:35.8; --h:30.7; --tilt:-2.0deg;">
+            <div class="media-container"><img src="photo5/photo52.jpeg" alt="Gljufrabui secondary waterfall" draggable="false"></div>
+        </figure>
+        <figure class="bulb b3" style="--x:97.9; --y:31.8; --w:34.0; --h:28.9; --tilt:-2.9deg;">
+            <div class="media-container"><img src="photo5/photo53.jpeg" alt="photo 3" draggable="false"></div>
+        </figure>
+        <figure class="bulb b4" style="--x:253.6; --y:46.5; --w:25.8; --h:22.3; --tilt:2.5deg;">
+            <div class="media-container"><img src="photo5/photo54.jpeg" alt="photo 4" draggable="false"></div>
+        </figure>
+        <figure class="bulb b5" style="--x:270.1; --y:129.8; --w:24.5; --h:23.2; --tilt:2.3deg;">
+            <div class="media-container"><img src="photo5/photo55.jpeg" alt="photo 5" draggable="false"></div>
+        </figure>
+        <figure class="bulb b6" style="--x:93.1; --y:81.4; --w:39.1; --h:33.4; --tilt:-0.4deg;">
+            <div class="media-container"><img src="photo5/photo56.jpeg" alt="photo 6" draggable="false"></div>
+        </figure>
+        <figure class="bulb b1" style="--x:9.7; --y:82.9; --w:31.4; --h:29.7; --tilt:1.5deg;">
+            <div class="media-container"><img src="photo5/photo57.jpeg" alt="photo 7" draggable="false"></div>
+        </figure>
+        <figure class="bulb b2" style="--x:143.6; --y:44.3; --w:38.4; --h:34.9; --tilt:-2.7deg;">
+            <div class="media-container"><img src="photo5/photo58.jpeg" alt="photo 8" draggable="false"></div>
+        </figure>
+        <figure class="bulb b3" style="--x:50.2; --y:108.8; --w:35.9; --h:32.7; --tilt:2.9deg;">
+            <div class="media-container"><img src="photo5/photo59.jpeg" alt="photo 9" draggable="false"></div>
+        </figure>
+        <figure class="bulb b4" style="--x:172.1; --y:9.6; --w:24.2; --h:22.1; --tilt:-2.1deg;">
+            <div class="media-container"><img src="photo5/photo60.jpeg" alt="photo 10" draggable="false"></div>
+        </figure>
+        <figure class="bulb b5" style="--x:222.7; --y:134.9; --w:33.2; --h:29.7; --tilt:1.6deg;">
+            <div class="media-container"><img src="photo5/photo61.jpeg" alt="photo 11" draggable="false"></div>
+        </figure>
+        <figure class="bulb b6" style="--x:167.0; --y:143.0; --w:36.7; --h:35.7; --tilt:-3.0deg;">
+            <div class="media-container"><img src="photo5/photo62.jpeg" alt="photo 12" draggable="false"></div>
+        </figure>
+        <figure class="bulb b1" style="--x:72.9; --y:154.7; --w:31.5; --h:30.1; --tilt:0.0deg;">
+            <div class="media-container"><img src="photo5/photo63.jpeg" alt="photo 13" draggable="false"></div>
+        </figure>
+        <figure class="bulb b2" style="--x:132.4; --y:180.9; --w:27.9; --h:25.3; --tilt:0.8deg;">
+            <div class="media-container"><img src="photo5/photo64.jpeg" alt="photo 14" draggable="false"></div>
+        </figure>
+        <figure class="bulb b3" style="--x:113.6; --y:127.5; --w:38.8; --h:40.0; --tilt:1.6deg;">
+            <div class="media-container"><img src="photo5/photo65.jpeg" alt="photo 15" draggable="false"></div>
+        </figure>
+        <figure class="bulb b4" style="--x:240.6; --y:86.9; --w:34.4; --h:33.3; --tilt:2.1deg;">
+            <div class="media-container"><img src="photo5/photo66.jpeg" alt="photo 16" draggable="false"></div>
+        </figure>
+        <figure class="bulb b5" style="--x:185.9; --y:91.4; --w:39.1; --h:40.4; --tilt:-1.4deg;">
+            <div class="media-container"><img src="photo5/photo67.jpeg" alt="photo 17" draggable="false"></div>
+        </figure>
+
     </div>
-
-    <!-- Media Section 1 -->
-    <section class="entry left" style="--gap: 110px;">
-        <figure class="shot">
-            <div class="media-container">
-                <img src="photo51.jpeg" alt="Gljufrafoss waterfall landscape">
-            </div>
-        </figure>
-        <p data-wobble>
-            <b>Gljufrafoss</b> - often seen as the main attraction drawing in day tourists from reykjavik as well as those exploring the island by camper van.
-        </p>
-    </section>
-
-    <!-- Media Section 2 -->
-    <section class="entry right" style="--gap: 80px;">
-        <figure class="shot">
-            <div class="media-container">
-                <img src="photo52.jpeg" alt="Gljufrabui secondary waterfall">
-            </div>
-        </figure>
-        <p data-wobble>
-            <b>Gljúfrabúi</b> - a smaller sister fall to the famous gljufrafoss, just a short walk away contains an equally impressive fall that you can get up close to.
-        </p>
-    </section>
-
-    <!-- Map Section -->
-    <!-- Copy a <section class="entry left|right"> block above, alternate left and right,
-         and vary --gap so the spacing stays uneven. Put the map iframe inside .media-container. -->
+</div>
 
 <script>
-/* Letter wobble for captions: each letter sits slightly higher or lower and tilts a little,
-   changing slowly (every ~4 letters), matching the home page. Plain text still works without JS. */
+/* Press and hold (mouse or finger) to drag around the gallery. It moves only while you hold down
+   and stops the moment you let go. Arrow keys also work for keyboard users. */
 (function () {
-  var AMP_Y = 1.2, AMP_R = 2, STEP = 4;
+  var view = document.getElementById('view');
+  var world = document.getElementById('world');
+  var x = 0, y = 0, vx = 0, vy = 0;
+  var dragging = false, moved = 0, lastX = 0, lastY = 0, raf = null;
 
-  function rng(seed) {
-    return function () {
-      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
-      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  function clamp() {
+    var vw = view.clientWidth, vh = view.clientHeight;
+    var ww = world.offsetWidth, wh = world.offsetHeight;
+    x = ww <= vw ? (vw - ww) / 2 : Math.min(0, Math.max(vw - ww, x));
+    y = wh <= vh ? (vh - wh) / 2 : Math.min(0, Math.max(vh - wh, y));
+  }
+  function apply() {
+    clamp();
+    world.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+  }
+  function center() {
+    x = (view.clientWidth - world.offsetWidth) / 2;
+    y = (view.clientHeight - world.offsetHeight) / 2;
+    apply();
   }
 
-  document.querySelectorAll('[data-wobble]').forEach(function (el, idx) {
-    var plain = el.textContent.replace(/\s+/g, ' ').trim();
-    var total = plain.replace(/\s/g, '').length;
-    var rand = rng(idx * 7919 + plain.length);
-    var count = Math.ceil(total / STEP) + 2, ys = [], rs = [], i;
-    for (i = 0; i < count; i++) { ys.push((rand() * 2 - 1) * AMP_Y); }
-    for (i = 0; i < count; i++) { rs.push((rand() * 2 - 1) * AMP_R); }
+  /* The gallery only starts moving once the pointer has travelled a few pixels while held down.
+     Until then it is just a click, so clicking "2026" still follows its link. */
+  var down = false, startX = 0, startY = 0;
 
-    var n = 0;
-    function value(arr, k) {
-      var a = Math.floor(k / STEP), t = (1 - Math.cos(Math.PI * (k % STEP) / STEP)) / 2;
-      return arr[a] * (1 - t) + arr[a + 1] * t;
-    }
-    function wrap(node) {
-      if (node.nodeType === 3) {
-        var frag = document.createDocumentFragment();
-        node.textContent.split(/(\s+)/).forEach(function (tok) {
-          if (!tok) return;
-          if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(' ')); return; }
-          var w = document.createElement('span');
-          w.className = 'w';
-          tok.split('').forEach(function (ch) {
-            var l = document.createElement('span');
-            l.className = 'l';
-            l.textContent = ch;
-            l.style.transform = 'translateY(' + value(ys, n).toFixed(2) + 'px) rotate(' + value(rs, n).toFixed(2) + 'deg)';
-            n++;
-            w.appendChild(l);
-          });
-          frag.appendChild(w);
-        });
-        return frag;
-      }
-      var copy = node.cloneNode(false);
-      node.childNodes.forEach(function (c) { copy.appendChild(wrap(c)); });
-      return copy;
-    }
-
-    var visual = document.createElement('span');
-    visual.setAttribute('aria-hidden', 'true');
-    Array.prototype.slice.call(el.childNodes).forEach(function (c) { visual.appendChild(wrap(c)); });
-    var sr = document.createElement('span');
-    sr.className = 'sr';
-    sr.textContent = plain;
-    el.textContent = '';
-    el.appendChild(sr);
-    el.appendChild(visual);
+  view.addEventListener('pointerdown', function (e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    down = true; dragging = false; moved = 0;
+    startX = lastX = e.clientX; startY = lastY = e.clientY;
   });
+  view.addEventListener('pointermove', function (e) {
+    if (!down) return;
+    if (!dragging) {
+      moved = Math.max(moved, Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY));
+      if (moved < 5) return;
+      dragging = true;
+      view.classList.add('dragging');
+      view.setPointerCapture(e.pointerId);
+    }
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    x += dx; y += dy;
+    apply();
+  });
+  function end(e) {
+    down = false;
+    if (!dragging) return;
+    dragging = false;
+    view.classList.remove('dragging');
+    if (view.hasPointerCapture(e.pointerId)) view.releasePointerCapture(e.pointerId);
+  }
+  view.addEventListener('pointerup', end);
+  view.addEventListener('pointercancel', end);
+
+  /* a drag should not count as a click on the title link */
+  view.addEventListener('click', function (e) {
+    if (moved > 6) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  view.addEventListener('keydown', function (e) {
+    var s = 90, k = e.key;
+    if (k === 'ArrowLeft') x += s; else if (k === 'ArrowRight') x -= s;
+    else if (k === 'ArrowUp') y += s; else if (k === 'ArrowDown') y -= s;
+    else return;
+    e.preventDefault(); apply();
+  });
+
+  window.addEventListener('resize', apply);
+  center();
+  view.focus({ preventScroll: true });
 })();
 </script>
 

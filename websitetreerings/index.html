@@ -85,6 +85,10 @@
             cursor: pointer;
         }
 
+        /* LOCKED rings: no link, and the cursor says so */
+        .container a.locked svg path[stroke="black"],
+        .container a.locked svg path.hit { cursor: not-allowed; }
+
         /* Delicate fine-line hover states */
         .container a:not(.r5):hover path[stroke="black"] {
             stroke-width: 3px;
@@ -300,7 +304,7 @@
             </a>
 
             <!-- Ring 1 -->
-            <a href="r1.html" class="r1">
+            <a class="r1 locked" aria-label="locked" aria-disabled="true">
                 <svg width="146" height="128" viewBox="0 0 146 128">
                     <path id="r1-p" d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" fill="white"/>
                     <path d="M145.721 67.7101C145.721 107.714 135.263 127.674 76.7211 127.674C18.1789 127.674 38.7338 117.674 9.22107 82.9065C-25.7789 41.6743 47.0163 -8.3226 91.2211 1.17432C124.06 8.22934 145.721 27.7057 145.721 67.7101Z" stroke-width="2" stroke="black" fill="none"/>
@@ -309,7 +313,7 @@
             </a>
 
             <!-- Ring 0 (new, Figma node 33-9) -->
-            <a href="r0.html" class="r0" aria-label="TRIP NAME - SEASON YEAR">
+            <a class="r0 locked" aria-label="locked" aria-disabled="true">
                 <svg width="105" height="86" viewBox="0 0 105 86">
                     <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" fill="white"/>
                     <path d="M105 38C105 56.0413 78.8639 86 60.2098 86C41.5557 86 0 56.0413 0 38C0 19.9587 41.5557 0 60.2098 0C78.8639 0 105 19.9587 105 38Z" stroke-width="2" stroke="black" fill="none"/>
@@ -318,7 +322,7 @@
             </a>
 
             <!-- Ring 00 (new, Figma node 57-3) -->
-            <a href="r00.html" class="r00" aria-label="TRIP NAME - SEASON YEAR">
+            <a class="r00 locked" aria-label="locked" aria-disabled="true">
                 <svg width="62" height="58" viewBox="0 0 62 58">
                     <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" fill="white"/>
                     <path d="M62 24.7442C62 36.492 39.5148 57.5 28.5 57.5C17.4852 57.5 0 36.492 0 24.7442C0 12.9964 24.5377 0 35.5524 0C46.5672 0 62 12.9964 62 24.7442Z" stroke-width="2" stroke="black" fill="none"/>
@@ -327,7 +331,7 @@
             </a>
 
             <!-- Ring 000 (new innermost, Figma node 57-5) -->
-            <a href="r000.html" class="r000" aria-label="TRIP NAME - SEASON YEAR">
+            <a class="r000 locked" aria-label="locked" aria-disabled="true">
                 <svg width="36" height="29" viewBox="0 0 36 29">
                     <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" fill="white"/>
                     <path d="M36 12.814C36 18.8976 27.039 29 20.6434 29C14.2477 29 0 18.8976 0 12.814C0 6.73026 14.2477 0 20.6434 0C27.039 0 36 6.73026 36 12.814Z" stroke-width="2" stroke="black" fill="none"/>
@@ -343,7 +347,7 @@
                     <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.1 -0.1 -0.2 -0.2 -0.1 0.2 0.6 0.6 0.2 -0.0 -0.0 -0.0 -0.0 -0.1 -0.3 -0.3 -0.1 0.1 0.3 0.3 0.1 -0.1 -0.3 -0.3 -0.1 0.1 0.1 0.1 0.1 0.1 0.1" rotate="-1.3 -0.8 0.5 1.8 2.3 1.8 0.5 -0.7 -1.3 -1.0 -0.5 0.1 0.3 0.7 1.7 2.7 3.1 2.8 2.2 1.6 1.3 1.1 0.6 0.1 -0.2 -0.4 -1.0 -1.6 -1.8 -1.5 -0.8">Click on a ring to learn more</tspan></textPath>
                 </text>
                 <text class="cap cap-r1">
-                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.3 -0.1 -0.3 -0.3 -0.1 0.2 0.4 0.4 0.2 0.0 0.1 0.1 0.0 -0.2 -0.4 -0.4 -0.2 0.3 0.8 0.8 0.3 -0.2" rotate="-2.4 -2.2 -1.7 -1.2 -1.0 -1.3 -1.9 -2.4 -2.7 -2.8 -3.0 -3.2 -3.3 -2.5 -0.7 1.1 1.9 1.7 1.3 0.9 0.7 0.8">2022</tspan></textPath>
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.3 -0.1 -0.3 -0.3 -0.1 0.2" rotate="-2.4 -2.2 -1.7 -1.2 -1.0 -1.3">locked</tspan></textPath>
                 </text>
                 <text class="cap cap-r2">
                     <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-1.2 0.0 0.0 0.0 0.0 -0.1 -0.2 -0.2 -0.1 0.3 0.8 0.8 0.3 0.0 0.0 0.0 0.0 0.1 0.2 0.2 0.1 -0.1 -0.3 -0.3 -0.1 0.2 0.4 0.4 0.2 -0.3" rotate="-2.9 -2.7 -2.3 -1.9 -1.7 -1.1 0.5 2.0 2.6 1.9 0.2 -1.6 -2.3 -2.3 -2.4 -2.4 -2.4 -1.9 -0.6 0.8 1.3 1.4 1.7 1.9 2.0 1.4 -0.0 -1.5 -2.1 -1.9">2023</tspan></textPath>
@@ -358,13 +362,13 @@
                     <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 -0.1 -0.2 -0.2 -0.1 0.3 0.8 0.8 0.3 -0.3 -0.8 -0.8 -0.3 0.4 0.9 0.9 0.4 -0.4 -1.0 -1.0 -0.4" rotate="3.3 2.8 1.6 0.4 -0.1 -0.5 -1.6 -2.6 -3.0 -2.9 -2.5 -2.1 -1.9 -2.0 -2.2 -2.5 -2.6 -2.2 -1.1 0.0 0.5">2026</tspan></textPath>
                 </text>
                 <text class="cap cap-r0">
-                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">2020</tspan></textPath>
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1">locked</tspan></textPath>
                 </text>
                 <text class="cap cap-r00">
-                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">2019</tspan></textPath>
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1">locked</tspan></textPath>
                 </text>
                 <text class="cap cap-r000">
-                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.3 0.7 0.7 0.3 -0.3 -0.7 -0.7 -0.3 0.2 0.6 0.6 0.2 -0.3 -0.7" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1 0.6 0.0 -0.2 -0.7 -1.7 -2.8 -3.3 -2.9 -2.1 -1.2 -0.9 -0.3 1.1 2.5 3.1 2.5 1.2">2018</tspan></textPath>
+                    <textPath href="#caption-curve" startOffset="52.6%" text-anchor="middle"><tspan dy="-0.5 0.3 0.7 0.7 0.3 -0.3" rotate="-3.2 -2.5 -0.9 0.7 1.3 1.1">locked</tspan></textPath>
                 </text>
             </svg>
         </div>
